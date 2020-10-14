@@ -2,18 +2,21 @@ const peerConnections = {}
 
 const $videoLocal = document.querySelector('#local')
 
-// Media contrains
+// Media contraints
 
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
   var constraints = {
       audio: true,
-      video: true
+      video: { facingMode: "user" }
   };
 
   navigator.mediaDevices.getUserMedia(constraints)
       .then(function(stream) {
-          video.srcObject = stream;
-          socket.emit('broadcaster')
+        $videoLocal.srcObject = stream;
+        $videoLocal.onloadedmetadata = function(e) {
+          $videoLocal.play();
+        };
+        socket.emit('broadcaster')
       })
       .catch(err =>  console.log (err))
 }
