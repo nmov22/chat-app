@@ -4,8 +4,8 @@ const $videoLocal = document.querySelector('#local')
 
 // Media contrains
 const constraints = {
-    $videoLocal: { facingMode: 'user' },
-    audio: true
+    $videoLocal: { facingMode: 'user' }
+    // audio: true
 }
 
 navigator.mediaDevices
