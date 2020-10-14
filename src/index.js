@@ -29,8 +29,7 @@ app.use(express.static(publicDirectoryPath))
 
 
 io.on('connection', (socket) => {
-    console.log('New web socket connection.')
-
+    
     socket.on('join', ({ username, room }, callback) => {
         const { error, user} = addUser( { id: socket.id, username, room})
 
@@ -67,6 +66,34 @@ io.on('connection', (socket) => {
         callback()
     })
 
+    socket.on('broadcaster', () => {
+        socket.broadcast.emit("broadcaster");
+    });
+    
+    socket.on('watcher', () => {
+        const user = getUser(socket.id)
+
+        io.to(user.room).emit('watcher', user.id);
+    });
+    
+    socket.on('offer', (room, message) => {
+        const user = getUser(socket.id)
+
+        io.to(room).emit('offer', user.id, message);
+    });
+    
+    socket.on('answer', (room, message) => {
+        const user = getUser(socket.id)
+
+        socket.to(room).emit('answer', user.id, message);
+    });
+    
+    socket.on('candidate', (room, message) => {
+        const user = getUser(socket.id)
+
+        socket.to(room).emit('candidate', user.id, message);
+    });
+
     socket.on('disconnect', () => {
         const user = removeUser(socket.id)
 
@@ -76,6 +103,7 @@ io.on('connection', (socket) => {
                 room : user.room,
                 users : getUsersInRoom(user.room)
             })
+            io.to(user.room).emit('disconnectPeer', user.id);
         }
     })
 })
