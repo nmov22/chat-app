@@ -4,18 +4,16 @@ const $videoLocal = document.querySelector('#local')
 
 // Media contrains
 const constraints = {
-    video: { width: 1280, height: 720 },
+    video: true,
     audio: true
 }
-
-navigator.
 
 navigator.mediaDevices
   .getUserMedia(constraints)
   .then(stream => {
     $videoLocal.srcObject = stream
     socket.emit('broadcaster')
-  })
+  })  
   .catch(error => console.error(error))
 
 socket.on('watcher', id => {
