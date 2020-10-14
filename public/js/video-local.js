@@ -3,18 +3,36 @@ const peerConnections = {}
 const $videoLocal = document.querySelector('#local')
 
 // Media contrains
-const constraints = {
-    video: true,
-    audio: true
+
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  var constraints = {
+      audio: true,
+      video: true
+  };
+
+  navigator.mediaDevices.getUserMedia(constraints)
+      .then(function(stream) {
+          video.srcObject = stream;
+          socket.emit('broadcaster')
+      })
+      .catch(err =>  console.log (err))
+}
+else {
+  console.log ("navigator.mediaDevices not supported")
 }
 
-navigator.mediaDevices
-  .getUserMedia(constraints)
-  .then(stream => {
-    $videoLocal.srcObject = stream
-    socket.emit('broadcaster')
-  })  
-  .catch(error => console.error(error))
+// var constraints = {
+//     video: true,
+//     audio: true
+// }
+
+// navigator.mediaDevices
+//   .getUserMedia(constraints)
+//   .then(stream => {
+//     $videoLocal.srcObject = stream
+//     socket.emit('broadcaster')
+//   })  
+//   .catch(error => console.error(error))
 
 socket.on('watcher', id => {
   const peerConnection = new RTCPeerConnection(config)
