@@ -4,9 +4,11 @@ const $videoLocal = document.querySelector('#local')
 
 // Media contrains
 const constraints = {
-    video: { facingMode: 'user' },
+    video: { width: 1280, height: 720 },
     audio: true
 }
+
+navigator.
 
 navigator.mediaDevices
   .getUserMedia(constraints)
