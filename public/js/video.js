@@ -26,6 +26,13 @@ socket.on('watcher', id => {
   let stream = $videoLocal.srcObject
     stream.getTracks().forEach(track => peerConnection.addTrack(track, stream))
     
+    peerConnection.onicecandidate = event => {
+      if (event.candidate) {
+        console.log('Call Candidate Local')
+        socket.emit('candidateLocal', id, event.candidate)
+      }
+    }
+
     peerConnection
       .createOffer()
       .then(sdp => peerConnection.setLocalDescription(sdp))
@@ -33,13 +40,6 @@ socket.on('watcher', id => {
         console.log('Call Offer')
         socket.emit('offer', id, peerConnection.localDescription)
     })
-
-    peerConnection.onicecandidate = event => {
-      if (event.candidate) {
-        console.log('Call Candidate Local')
-        socket.emit('candidateLocal', id, event.candidate)
-      }
-    }
 })
 
 socket.on('answer', (id, description) => {

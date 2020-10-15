@@ -69,7 +69,7 @@ io.on('connection', (socket) => {
 
     socket.on('broadcaster', () => {
         const user = getUser(socket.id)
-        socket.to(user.room).emit('broadcaster');
+        socket.broadcast.emit('broadcaster');
     })
     
     socket.on('watcher', () => {
