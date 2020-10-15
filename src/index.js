@@ -82,14 +82,14 @@ io.on('connection', (socket) => {
         const user = getUser(socket.id)
         const toUser = getUser(id)
 
-        socket.to(toUser.room).emit('offer', user.id, message);
+        io.to(toUser.id).emit('offer', user.id, message);
     })
     
     socket.on('answer', (id, message) => {
         const user = getUser(socket.id)
         const toUser = getUser(id)
 
-        socket.to(toUser.room).emit('answer', user.id, message);
+        io.to(toUser.id).emit('answer', user.id, message);
     })
     
 
@@ -97,14 +97,14 @@ io.on('connection', (socket) => {
         const user = getUser(socket.id)
         const toUser = getUser(id)
 
-        socket.to(toUser.room).emit('candidateLocal', user.id, message);
+        io.to(toUser.id).emit('candidateLocal', user.id, message);
     })
 
     socket.on('candidateRemote', (id, message) => {
         const user = getUser(socket.id)
         const toUser = getUser(id)
 
-        socket.to(toUser.room).emit('candidateRemote', user.id, message);
+        io.to(toUser.id).emit('candidateRemote', user.id, message);
     })
 
     socket.on('disconnect', () => {
@@ -116,7 +116,7 @@ io.on('connection', (socket) => {
                 room : user.room,
                 users : getUsersInRoom(user.room)
             })
-            io.to(user.room).emit('disconnectPeer', user.id);
+            socket.to(user.room).emit('disconnectPeer', user.id);
         }
     })
 })
