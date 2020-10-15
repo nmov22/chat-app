@@ -27,6 +27,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia(constraints)
     .then(function(stream) {
         $videoLocal.srcObject = stream
+        console.log('Call Broadcaster')
         socket.emit('broadcaster')
     })
     .catch(err =>  console.log (err))
@@ -35,6 +36,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 }
 
 socket.on('watcher', id => {
+    console.log('Watcher Listener')
   const peerConnection = new RTCPeerConnection(config)
   peerConnections[id] = peerConnection
 
@@ -45,37 +47,37 @@ socket.on('watcher', id => {
       .createOffer()
       .then(sdp => peerConnection.setLocalDescription(sdp))
       .then(() => {
+        console.log('Call Offer')
         socket.emit('offer', id, peerConnection.localDescription)
     })
 
     peerConnection.onicecandidate = event => {
       if (event.candidate) {
-        socket.emit('candidate', id, event.candidate)
+        console.log('Call Candidate Local')
+        socket.emit('candidateLocal', id, event.candidate)
       }
     }
 })
 
 socket.on('answer', (id, description) => {
+    console.log('Answer Listener')
   peerConnections[id].setRemoteDescription(description)
 })
 
-socket.on('candidate', (id, candidate) => {
+socket.on('candidateRemote', (id, candidate) => {
+console.log('Candidate Remote Listener')
   peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate))
 })
 
-socket.on('disconnectPeer', id => {
-  peerConnections[id].close()
-  delete peerConnections[id]
-})
-
 socket.on('offer', (id, description) => {
-    console.log('Offer called')
+    console.log('Offer Listener')
     peerConnection = new RTCPeerConnection(config)
     peerConnection
       .setRemoteDescription(description)
       .then(() => peerConnection.createAnswer())
       .then(sdp => peerConnection.setLocalDescription(sdp))
       .then(() => {
+        console.log('Call Anwser')
         socket.emit('answer', id, peerConnection.localDescription)
       })
   
@@ -85,31 +87,41 @@ socket.on('offer', (id, description) => {
   
     peerConnection.onicecandidate = event => {
       if (event.candidate) {
-        socket.emit('candidate', id, event.candidate)
+        console.log('Call Candidate')
+        socket.emit('candidateRemote', id, event.candidate)
       }
     }
 })
   
-socket.on('candidate', (id, candidate) => {
+socket.on('candidateLocal', (id, candidate) => {
+    console.log('Candidate Local Listener')
     peerConnection
     .addIceCandidate(new RTCIceCandidate(candidate))
     .catch(e => console.error(e))
 })
   
 socket.on('broadcaster', () => {
+    console.log('Broadcaster Listener')
+    console.log('Call Watcher')
     socket.emit('watcher')
 })
-  
-socket.on('disconnectPeer', () => {
-    peerConnection.close()
-})
+
 
 socket.emit('join', { username, room}, (error) => {
+    console.log('Call Join')
     if (error) {
         alert(error)
         location.href = '/'
     }
 })
+
+socket.on('disconnectPeer', id => {
+    console.log('Disconnet Peer Listener')
+    peerConnection.close()
+
+    peerConnections[id].close()
+    delete peerConnections[id]
+  })
 
 window.onunload = window.onbeforeunload = () => {
   socket.close()

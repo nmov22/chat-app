@@ -67,35 +67,43 @@ io.on('connection', (socket) => {
 
     socket.on('broadcaster', () => {
         const user = getUser(socket.id)
-        io.to(user.room).broadcast.emit('broadcaster');
-    });
+        socket.to(user.room).emit('broadcaster');
+    })
     
     socket.on('watcher', () => {
         const user = getUser(socket.id)
 
-        io.to(user.room).broadcast.emit('watcher', user.id);
-    });
+        socket.to(user.room).emit('watcher', user.id);
+    })
     
     socket.on('offer', (id, message) => {
         const user = getUser(socket.id)
         const toUser = getUser(id)
 
-        io.to(toUser.room).broadcast.emit('offer', user.id, message);
-    });
+        socket.to(toUser.room).emit('offer', user.id, message);
+    })
     
     socket.on('answer', (id, message) => {
         const user = getUser(socket.id)
         const toUser = getUser(id)
 
-        io.to(toUser.room).broadcast.emit('answer', user.id, message);
-    });
+        socket.to(toUser.room).emit('answer', user.id, message);
+    })
     
-    socket.on('candidate', (id, message) => {
+
+    socket.on('candidateLocal', (id, message) => {
         const user = getUser(socket.id)
         const toUser = getUser(id)
 
-        io.to(toUser.room).broadcast.emit('candidate', user.id, message);
-    });
+        socket.to(toUser.room).emit('candidateLocal', user.id, message);
+    })
+
+    socket.on('candidateRemote', (id, message) => {
+        const user = getUser(socket.id)
+        const toUser = getUser(id)
+
+        socket.to(toUser.room).emit('candidateRemote', user.id, message);
+    })
 
     socket.on('disconnect', () => {
         const user = removeUser(socket.id)
