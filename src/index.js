@@ -7,7 +7,6 @@ const wordsFilter = require('bad-words')
 const { generateLocation } = require('./utils/messages')
 const { generateMessage } = require('./utils/messages')
 const {addUser, removeUser, getUser, getUsersInRoom} = require('./utils/users')
-const users = require('./utils/users')
 
 const app = express()
 const server = http.createServer(app)
@@ -67,31 +66,35 @@ io.on('connection', (socket) => {
     })
 
     socket.on('broadcaster', () => {
-        socket.broadcast.emit("broadcaster");
+        const user = getUser(socket.id)
+        io.to(user.room).broadcast.emit('broadcaster');
     });
     
     socket.on('watcher', () => {
         const user = getUser(socket.id)
 
-        io.to(user.room).emit('watcher', user.id);
+        io.to(user.room).broadcast.emit('watcher', user.id);
     });
     
-    socket.on('offer', (room, message) => {
+    socket.on('offer', (id, message) => {
         const user = getUser(socket.id)
+        const toUser = getUser(id)
 
-        io.to(room).emit('offer', user.id, message);
+        io.to(toUser.room).broadcast.emit('offer', user.id, message);
     });
     
-    socket.on('answer', (room, message) => {
+    socket.on('answer', (id, message) => {
         const user = getUser(socket.id)
+        const toUser = getUser(id)
 
-        socket.to(room).emit('answer', user.id, message);
+        io.to(toUser.room).broadcast.emit('answer', user.id, message);
     });
     
-    socket.on('candidate', (room, message) => {
+    socket.on('candidate', (id, message) => {
         const user = getUser(socket.id)
+        const toUser = getUser(id)
 
-        socket.to(room).emit('candidate', user.id, message);
+        io.to(toUser.room).broadcast.emit('candidate', user.id, message);
     });
 
     socket.on('disconnect', () => {

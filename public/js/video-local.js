@@ -7,7 +7,7 @@ const $videoLocal = document.querySelector('#local')
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
   var constraints = {
       audio: true,
-      video: { facingMode: "user" }
+      video: { facingMode: 'user' }
   };
 
   navigator.mediaDevices.getUserMedia(constraints)
@@ -21,7 +21,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       .catch(err =>  console.log (err))
 }
 else {
-  console.log ("navigator.mediaDevices not supported")
+  console.log ('navigator.mediaDevices not supported')
 }
 
 // var constraints = {
