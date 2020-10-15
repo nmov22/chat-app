@@ -18,23 +18,6 @@ const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix : true 
 
 // Media contraints
 
-if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    var constraints = {
-        // audio: true
-        video: { facingMode: 'user' }
-    }
-    
-    navigator.mediaDevices.getUserMedia(constraints)
-    .then(function(stream) {
-        $videoLocal.srcObject = stream
-        console.log('Call Broadcaster')
-        socket.emit('broadcaster')
-    })
-    .catch(err =>  console.log (err))
-} else {
-  console.log ('navigator.mediaDevices not supported')
-}
-
 socket.on('watcher', id => {
     console.log('Watcher Listener')
   const peerConnection = new RTCPeerConnection(config)
@@ -114,13 +97,29 @@ socket.on('disconnectPeer', id => {
     delete peerConnections[id]
   })
 
-socket.emit('join', { username, room}, (error) => {
-    console.log('Call Join')
-    if (error) {
-        alert(error)
-        location.href = '/'
-    }
-})
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  var constraints = {
+      audio: true
+      // video: { facingMode: 'user' }
+  }
+  
+  navigator.mediaDevices.getUserMedia(constraints)
+  .then(function(stream) {
+      $videoLocal.srcObject = stream
+      // console.log('Call Broadcaster')
+      // socket.emit('broadcaster')
+      socket.emit('join', { username, room}, (error) => {
+        console.log('Call Join')
+        if (error) {
+            alert(error)
+            location.href = '/'
+        }
+    })
+  })
+  .catch(err =>  console.log (err))
+} else {
+  console.log ('navigator.mediaDevices not supported')
+}
 
 window.onunload = window.onbeforeunload = () => {
   socket.close()

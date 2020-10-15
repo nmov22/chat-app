@@ -7,6 +7,7 @@ const wordsFilter = require('bad-words')
 const { generateLocation } = require('./utils/messages')
 const { generateMessage } = require('./utils/messages')
 const {addUser, removeUser, getUser, getUsersInRoom} = require('./utils/users')
+const e = require('express')
 
 const app = express()
 const server = http.createServer(app)
@@ -44,6 +45,7 @@ io.on('connection', (socket) => {
             room : user.room,
             users : getUsersInRoom(user.room)
         })
+        io.to(user.room).emit('broadcaster')
         callback()
     })
 
@@ -65,10 +67,10 @@ io.on('connection', (socket) => {
         callback()
     })
 
-    socket.on('broadcaster', () => {
-        const user = getUser(socket.id)
-        socket.to(user.room).emit('broadcaster');
-    })
+    // socket.on('broadcaster', () => {
+    //     const user = getUser(socket.id)
+    //     socket.to(user.room).emit('broadcaster');
+    // })
     
     socket.on('watcher', () => {
         const user = getUser(socket.id)
