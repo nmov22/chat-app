@@ -6,7 +6,7 @@ const socketio = require('socket.io')
 const wordsFilter = require('bad-words')
 const { generateLocation } = require('./utils/messages')
 const { generateMessage } = require('./utils/messages')
-const {addUser, removeUser, getUser, getUsersInRoom} = require('./utils/users')
+const {addUser, removeUser, getUser, getUsersInRoom, getOtherUserInRoom} = require('./utils/users')
 const e = require('express')
 
 const app = express()
@@ -74,8 +74,9 @@ io.on('connection', (socket) => {
     
     socket.on('watcher', () => {
         const user = getUser(socket.id)
+        const otherUser = getOtherUserInRoom(socket.id)
 
-        socket.to(user.room).emit('watcher', user.id);
+        socket.to(otherUser.id).emit('watcher', user.id);
     })
     
     socket.on('offer', (id, message) => {
