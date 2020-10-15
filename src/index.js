@@ -45,7 +45,7 @@ io.on('connection', (socket) => {
             room : user.room,
             users : getUsersInRoom(user.room)
         })
-        io.to(user.room).emit('broadcaster')
+        // io.to(user.room).emit('broadcaster')
         callback()
     })
 
@@ -67,10 +67,10 @@ io.on('connection', (socket) => {
         callback()
     })
 
-    // socket.on('broadcaster', () => {
-    //     const user = getUser(socket.id)
-    //     socket.to(user.room).emit('broadcaster');
-    // })
+    socket.on('broadcaster', () => {
+        const user = getUser(socket.id)
+        socket.to(user.room).emit('broadcaster');
+    })
     
     socket.on('watcher', () => {
         const user = getUser(socket.id)

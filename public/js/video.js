@@ -90,36 +90,38 @@ socket.on('broadcaster', () => {
 })
 
 socket.on('disconnectPeer', id => {
-    console.log('Disconnet Peer Listener')
-    peerConnection.close()
+  console.log('Disconnet Peer Listener')
+  peerConnection.close()
 
-    peerConnections[id].close()
-    delete peerConnections[id]
-  })
+  peerConnections[id].close()
+  delete peerConnections[id]
+})
 
-if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-  var constraints = {
-      // audio: true
-      video: { facingMode: 'user' }
+socket.emit('join', { username, room}, (error) => {
+  console.log('Call Join')
+  if (error) {
+      alert(error)
+      return location.href = '/'
   }
-  
-  navigator.mediaDevices.getUserMedia(constraints)
-  .then(function(stream) {
-      $videoLocal.srcObject = stream
-      // console.log('Call Broadcaster')
-      // socket.emit('broadcaster')
-      socket.emit('join', { username, room}, (error) => {
-        console.log('Call Join')
-        if (error) {
-            alert(error)
-            location.href = '/'
-        }
+
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    var constraints = {
+        // audio: true
+        video: { facingMode: 'user' }
+    }
+    
+    navigator.mediaDevices.getUserMedia(constraints)
+    .then(function(stream) {
+        $videoLocal.srcObject = stream
+        console.log('Call Broadcaster')
+        socket.emit('broadcaster')
+        
     })
-  })
-  .catch(err =>  console.log (err))
-} else {
-  console.log ('navigator.mediaDevices not supported')
-}
+    .catch(err =>  console.log (err))
+  } else {
+    console.log ('navigator.mediaDevices not supported')
+  }
+})
 
 window.onunload = window.onbeforeunload = () => {
   socket.close()
