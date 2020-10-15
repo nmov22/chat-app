@@ -20,7 +20,7 @@ const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix : true 
 
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     var constraints = {
-        audio: true,
+        // audio: true
         video: { facingMode: 'user' }
     }
     
@@ -106,6 +106,13 @@ socket.on('broadcaster', () => {
     socket.emit('watcher')
 })
 
+socket.on('disconnectPeer', id => {
+    console.log('Disconnet Peer Listener')
+    peerConnection.close()
+
+    peerConnections[id].close()
+    delete peerConnections[id]
+  })
 
 socket.emit('join', { username, room}, (error) => {
     console.log('Call Join')
@@ -114,14 +121,6 @@ socket.emit('join', { username, room}, (error) => {
         location.href = '/'
     }
 })
-
-socket.on('disconnectPeer', id => {
-    console.log('Disconnet Peer Listener')
-    peerConnection.close()
-
-    peerConnections[id].close()
-    delete peerConnections[id]
-  })
 
 window.onunload = window.onbeforeunload = () => {
   socket.close()
