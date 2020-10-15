@@ -27,7 +27,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia(constraints)
     .then(function(stream) {
         $videoLocal.srcObject = stream
-        ocket.emit('broadcaster')
+        socket.emit('broadcaster')
     })
     .catch(err =>  console.log (err))
 } else {
