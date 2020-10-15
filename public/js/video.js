@@ -99,8 +99,8 @@ socket.on('disconnectPeer', id => {
 
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
   var constraints = {
-      audio: true
-      // video: { facingMode: 'user' }
+      // audio: true
+      video: { facingMode: 'user' }
   }
   
   navigator.mediaDevices.getUserMedia(constraints)
