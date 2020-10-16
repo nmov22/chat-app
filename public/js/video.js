@@ -22,7 +22,7 @@ socket.on('roomData', ({ room, users}) => {
     console.log('Call Broadcaster')
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       var constraints = {
-          // audio: true
+          audio: true,
           video: { facingMode: 'user' }
       }
       
