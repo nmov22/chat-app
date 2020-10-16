@@ -102,17 +102,23 @@ socket.on('offer', (id, description) => {
     }
 })
   
-socket.on('broadcaster', () => {
+socket.on('broadcaster', (id) => {
     console.log('Broadcaster Listener')
     console.log('Call Watcher')
-    socket.emit('watcher')
+    socket.emit('watcher', id)
 })
 
-socket.on('disconnectPeer', id => {
-  console.log('Disconnet Peer Listener')
+socket.on('disconnectStream', id => {
+  console.log('Disconnet Streaming Peer Listener')
 
   peerConnections[id].close()
   delete peerConnections[id]
+})
+
+socket.on('disconnectWatch', id => {
+  console.log('Disconnet Watching Peer Listener')
+
+  peerConnection.close()
 })
 
 socket.emit('join', { username, room}, (error) => {

@@ -67,28 +67,20 @@ io.on('connection', (socket) => {
     })
 
     socket.on('broadcaster', () => {
-        socket.broadcast.emit('broadcaster');
+        const user = getUser(socket.id)
+        socket.to(user.room).emit('broadcaster', user.id);
     })
     
-    socket.on('watcher', () => {
-        const user = getUser(socket.id)
-        const otherUser = getOtherUserInRoom(socket.id)
-
-        socket.to(otherUser.id).emit('watcher', user.id);
+    socket.on('watcher', (id) => {
+         socket.to(id).emit('watcher', socket.id);
     })
     
     socket.on('offer', (id, message) => {
-        const user = getUser(socket.id)
-        const toUser = getUser(id)
-
-        socket.to(toUser.id).emit('offer', user.id, message);
+        socket.to(id).emit('offer', socket.id, message);
     })
     
     socket.on('answer', (id, message) => {
-        const user = getUser(socket.id)
-        const toUser = getUser(id)
-
-        socket.to(toUser.id).emit('answer', user.id, message);
+        socket.to(id).emit('answer', socket.id, message);
     })
 
     // socket.on('candidate', (id, message) => {
@@ -99,22 +91,17 @@ io.on('connection', (socket) => {
     // })
 
     socket.on('candidateStream', (id, message) => {
-        const user = getUser(socket.id)
-        const toUser = getOtherUserInRoom(id)
-
-        socket.to(toUser.id).emit('candidateStream', user.id, message);
+        socket.to(id).emit('candidateStream', socket.id, message);
     })
 
     socket.on('candidateWatch', (id, message) => {
-        const user = getUser(socket.id)
-        const toUser = getOtherUserInRoom(id)
-
-        socket.to(toUser.id).emit('candidateWatch', user.id, message);
+        socket.to(id).emit('candidateWatch', socket.id, message);
     })
     
 
     socket.on('disconnect', () => {
         const user = removeUser(socket.id)
+        const otherUser = getOtherUserInRoom(socket.id)
 
         if (user) {
             io.to(user.room).emit('message', generateMessage(`${user.username} has left!`), 'ADMIN')
@@ -122,7 +109,8 @@ io.on('connection', (socket) => {
                 room : user.room,
                 users : getUsersInRoom(user.room)
             })
-            socket.to(user.room).emit('disconnectPeer', user.id);
+            socket.to(otherUser.id).emit('disconnectStream', user.id);
+            socket.to(otherUser.id).emit('disconnectWatch', user.id);
         }
     })
 })
