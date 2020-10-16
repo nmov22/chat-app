@@ -44,13 +44,6 @@ socket.on('watcher', id => {
 
   let stream = $videoLocal.srcObject
     stream.getTracks().forEach(track => peerConnections[id].addTrack(track, stream))
-    
-    peerConnections[id].onicecandidate = event => {
-      if (event.candidate) {
-        console.log('Call Candidate Local')
-        socket.emit('candidate', id, event.candidate)
-      }
-    }
 
     peerConnections[id]
       .createOffer()
@@ -59,6 +52,13 @@ socket.on('watcher', id => {
         console.log('Call Offer')
         socket.emit('offer', id, peerConnections[id].localDescription)
     })
+
+    peerConnections[id].onicecandidate = event => {
+      if (event.candidate) {
+        console.log('Call Candidate Local')
+        socket.emit('candidate', id, event.candidate)
+      }
+    }
 })
 
 socket.on('answer', (id, description) => {
@@ -68,7 +68,7 @@ socket.on('answer', (id, description) => {
 
 socket.on('candidate', (id, candidate) => {
   console.log('Candidate Remote Listener')
-  peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate))
+  peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate)).catch(e => console.error(e))
 })
 
 socket.on('offer', (id, description) => {

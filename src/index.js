@@ -67,7 +67,6 @@ io.on('connection', (socket) => {
     })
 
     socket.on('broadcaster', () => {
-        const user = getUser(socket.id)
         socket.broadcast.emit('broadcaster');
     })
     
@@ -80,14 +79,14 @@ io.on('connection', (socket) => {
     
     socket.on('offer', (id, message) => {
         const user = getUser(id)
-        const toUser = getUser(id)
+        const toUser = getOtherUserInRoom(id)
 
         socket.to(toUser.id).emit('offer', user.id, message);
     })
     
     socket.on('answer', (id, message) => {
         const user = getUser(socket.id)
-        const toUser = getUser(id)
+        const toUser = getOtherUserInRoom(id)
 
         socket.to(toUser.id).emit('answer', user.id, message);
     })
@@ -102,7 +101,7 @@ io.on('connection', (socket) => {
 
     socket.on('candidate', (id, message) => {
         const user = getUser(socket.id)
-        const toUser = getUser(id)
+        const toUser = getOtherUserInRoom(id)
 
         socket.to(toUser.id).emit('candidate', user.id, message);
     })
