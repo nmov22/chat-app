@@ -22,8 +22,8 @@ socket.on('roomData', ({ room, users}) => {
     console.log('Call Broadcaster')
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       var constraints = {
-          // audio: true,
-          video: { facingMode: 'user' }
+          audio: true
+          // video: { facingMode: 'user' }
       }
       
       navigator.mediaDevices.getUserMedia(constraints)
@@ -40,21 +40,21 @@ socket.on('roomData', ({ room, users}) => {
 
 socket.on('watcher', id => {
   console.log('Watcher Listener')
-  const peerConnection = new RTCPeerConnection(config)
-  peerConnections[id] = peerConnection
+  const connection = new RTCPeerConnection(config)
+  peerConnections[id] = connection
 
   let stream = $videoLocal.srcObject
-    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream))
+    stream.getTracks().forEach(track => connection.addTrack(track, stream))
 
-    peerConnection
+    connection
       .createOffer()
-      .then(sdp => peerConnection.setLocalDescription(sdp))
+      .then(sdp => connection.setLocalDescription(sdp))
       .then(() => {
         console.log('Call Offer')
-        socket.emit('offer', id, peerConnection.localDescription)
+        socket.emit('offer', id, connection.localDescription)
     })
 
-    peerConnection.onicecandidate = event => {
+    connection.onicecandidate = event => {
       if (event.candidate) {
         console.log('Call Candidate Local')
         socket.emit('candidateWatch', id, event.candidate)
@@ -89,17 +89,18 @@ socket.on('offer', (id, description) => {
         console.log('Call Anwser with' + id)
         socket.emit('answer', id, peerConnection.localDescription)
       })
-  
-    peerConnection.ontrack = event => {
-      $videoRemote.srcObject = event.streams[0]
-    }
-  
-    peerConnection.onicecandidate = event => {
-      if (event.candidate) {
-        console.log('Call Candidate')
-        socket.emit('candidateStream', id, event.candidate)
+
+    
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          console.log('Call Candidate')
+          socket.emit('candidateStream', id, event.candidate)
+        }
       }
-    }
+      
+      peerConnection.ontrack = event => {
+        $videoRemote.srcObject = event.streams[0]
+      }
 })
   
 socket.on('broadcaster', (id) => {
