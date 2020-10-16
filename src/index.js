@@ -78,26 +78,18 @@ io.on('connection', (socket) => {
     })
     
     socket.on('offer', (id, message) => {
-        const user = getUser(id)
-        const toUser = getOtherUserInRoom(id)
+        const user = getUser(socket.id)
+        const toUser = getUser(id)
 
         socket.to(toUser.id).emit('offer', user.id, message);
     })
     
     socket.on('answer', (id, message) => {
         const user = getUser(socket.id)
-        const toUser = getOtherUserInRoom(id)
+        const toUser = getUser(id)
 
         socket.to(toUser.id).emit('answer', user.id, message);
     })
-    
-
-    // socket.on('candidateLocal', (id, message) => {
-    //     const user = getUser(socket.id)
-    //     const toUser = getUser(id)
-
-    //     socket.to(toUser.id).emit('candidateLocal', user.id, message);
-    // })
 
     socket.on('candidate', (id, message) => {
         const user = getUser(socket.id)
