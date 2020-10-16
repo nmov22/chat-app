@@ -109,8 +109,10 @@ io.on('connection', (socket) => {
                 room : user.room,
                 users : getUsersInRoom(user.room)
             })
-            socket.to(otherUser.id).emit('disconnectStream', user.id);
-            socket.to(otherUser.id).emit('disconnectWatch', user.id);
+            if (otherUser) {
+                socket.to(otherUser.id).emit('disconnectStream', user.id);
+                socket.to(otherUser.id).emit('disconnectWatch', user.id);
+            }
         }
     })
 })
