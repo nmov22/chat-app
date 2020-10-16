@@ -91,12 +91,27 @@ io.on('connection', (socket) => {
         socket.to(toUser.id).emit('answer', user.id, message);
     })
 
-    socket.on('candidate', (id, message) => {
+    // socket.on('candidate', (id, message) => {
+    //     const user = getUser(socket.id)
+    //     const toUser = getOtherUserInRoom(id)
+
+    //     socket.to(toUser.id).emit('candidate', user.id, message);
+    // })
+
+    socket.on('candidateStream', (id, message) => {
         const user = getUser(socket.id)
         const toUser = getOtherUserInRoom(id)
 
-        socket.to(toUser.id).emit('candidate', user.id, message);
+        socket.to(toUser.id).emit('candidateStream', user.id, message);
     })
+
+    socket.on('candidateWatch', (id, message) => {
+        const user = getUser(socket.id)
+        const toUser = getOtherUserInRoom(id)
+
+        socket.to(toUser.id).emit('candidateWatch', user.id, message);
+    })
+    
 
     socket.on('disconnect', () => {
         const user = removeUser(socket.id)

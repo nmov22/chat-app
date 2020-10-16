@@ -1,3 +1,4 @@
+let peerConnection
 const peerConnections = {}
 const config = {
   iceServers: [
@@ -43,20 +44,20 @@ socket.on('watcher', id => {
   peerConnections[id] = peerConnection
 
   let stream = $videoLocal.srcObject
-    stream.getTracks().forEach(track => peerConnections[id].addTrack(track, stream))
+    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream))
 
-    peerConnections[id]
+    peerConnection
       .createOffer()
-      .then(sdp => peerConnections[id].setLocalDescription(sdp))
+      .then(sdp => peerConnection.setLocalDescription(sdp))
       .then(() => {
         console.log('Call Offer')
-        socket.emit('offer', id, peerConnections[id].localDescription)
+        socket.emit('offer', id, peerConnection.localDescription)
     })
 
-    peerConnections[id].onicecandidate = event => {
+    peerConnection.onicecandidate = event => {
       if (event.candidate) {
         console.log('Call Candidate Local')
-        socket.emit('candidate', id, event.candidate)
+        socket.emit('candidateWatch', id, event.candidate)
       }
     }
 })
@@ -66,36 +67,40 @@ socket.on('answer', (id, description) => {
   peerConnections[id].setRemoteDescription(description)
 })
 
-socket.on('candidate', (id, candidate) => {
-  console.log('Candidate Remote Listener')
+socket.on('candidateStream', (id, candidate) => {
+  console.log('Candidate Stream Listener')
   peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate)).catch(e => console.error(e))
 })
 
+socket.on('candidateWatch', (id, candidate) => {
+  console.log('Candidate Watch Listener')
+  peerConnection.addIceCandidate(new RTCIceCandidate(candidate)).catch(e => console.error(e))
+})
+
+
 socket.on('offer', (id, description) => {
     console.log('Offer Listener with' + id)
-    peerConnections[id] = new RTCPeerConnection(config)
-    peerConnections[id]
+    peerConnection = new RTCPeerConnection(config)
+    peerConnection
       .setRemoteDescription(description)
-      .then(() => peerConnections[id].createAnswer())
-      .then(sdp => peerConnections[id].setLocalDescription(sdp))
+      .then(() => peerConnection.createAnswer())
+      .then(sdp => peerConnection.setLocalDescription(sdp))
       .then(() => {
         console.log('Call Anwser with' + id)
-        socket.emit('answer', id, peerConnections[id].localDescription)
+        socket.emit('answer', id, peerConnection.localDescription)
       })
   
-    peerConnections[id].ontrack = event => {
+    peerConnection.ontrack = event => {
       $videoRemote.srcObject = event.streams[0]
     }
   
-    peerConnections[id].onicecandidate = event => {
+    peerConnection.onicecandidate = event => {
       if (event.candidate) {
         console.log('Call Candidate')
-        socket.emit('candidate', id, event.candidate)
+        socket.emit('candidateStream', id, event.candidate)
       }
     }
 })
-  
-
   
 socket.on('broadcaster', () => {
     console.log('Broadcaster Listener')
