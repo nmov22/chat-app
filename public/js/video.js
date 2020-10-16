@@ -16,10 +16,16 @@ const $videoRemote = document.querySelector('#remote')
 // Options
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix : true })
 
-// Media contraints
+socket.on('roomData', ({ room, users}) => {
+  console.log('Room Data Listener')
+  if (users.length > 1) {
+    console.log('Call Broadcaster')
+    socket.emit('broadcaster')
+  }
+})
 
 socket.on('watcher', id => {
-    console.log('Watcher Listener')
+  console.log('Watcher Listener')
   const peerConnection = new RTCPeerConnection(config)
   peerConnections[id] = peerConnection
 
@@ -43,7 +49,7 @@ socket.on('watcher', id => {
 })
 
 socket.on('answer', (id, description) => {
-    console.log('Answer Listener')
+  console.log('Answer Listener')
   peerConnections[id].setRemoteDescription(description)
 })
 
@@ -53,14 +59,14 @@ console.log('Candidate Remote Listener')
 })
 
 socket.on('offer', (id, description) => {
-    console.log('Offer Listener')
+    console.log('Offer Listener with' + id)
     peerConnection = new RTCPeerConnection(config)
     peerConnection
       .setRemoteDescription(description)
       .then(() => peerConnection.createAnswer())
       .then(sdp => peerConnection.setLocalDescription(sdp))
       .then(() => {
-        console.log('Call Anwser')
+        console.log('Call Anwser with' + id)
         socket.emit('answer', id, peerConnection.localDescription)
       })
   
@@ -112,10 +118,7 @@ socket.emit('join', { username, room}, (error) => {
     
     navigator.mediaDevices.getUserMedia(constraints)
     .then(function(stream) {
-        $videoLocal.srcObject = stream
-        console.log('Call Broadcaster')
-        socket.emit('broadcaster')
-        
+        $videoLocal.srcObject = stream        
     })
     .catch(err =>  console.log (err))
   } else {
