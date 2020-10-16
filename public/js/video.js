@@ -20,7 +20,21 @@ socket.on('roomData', ({ room, users}) => {
   console.log('Room Data Listener')
   if (users.length > 1) {
     console.log('Call Broadcaster')
-    socket.emit('broadcaster')
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      var constraints = {
+          // audio: true
+          video: { facingMode: 'user' }
+      }
+      
+      navigator.mediaDevices.getUserMedia(constraints)
+      .then(function(stream) {
+          $videoLocal.srcObject = stream
+          socket.emit('broadcaster')        
+      })
+      .catch(err =>  console.log (err))
+    } else {
+      console.log ('navigator.mediaDevices not supported')
+    }
   }
 })
 
@@ -108,21 +122,6 @@ socket.emit('join', { username, room}, (error) => {
   if (error) {
       alert(error)
       return location.href = '/'
-  }
-
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    var constraints = {
-        // audio: true
-        video: { facingMode: 'user' }
-    }
-    
-    navigator.mediaDevices.getUserMedia(constraints)
-    .then(function(stream) {
-        $videoLocal.srcObject = stream        
-    })
-    .catch(err =>  console.log (err))
-  } else {
-    console.log ('navigator.mediaDevices not supported')
   }
 })
 
