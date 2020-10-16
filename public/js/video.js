@@ -44,17 +44,17 @@ socket.on('watcher', id => {
   peerConnections[id] = connection
 
   let stream = $videoLocal.srcObject
-    stream.getTracks().forEach(track => connection.addTrack(track, stream))
+    stream.getTracks().forEach(track => peerConnections[id].addTrack(track, stream))
 
-    connection
+    peerConnections[id]
       .createOffer()
-      .then(sdp => connection.setLocalDescription(sdp))
+      .then(sdp => peerConnections[id].setLocalDescription(sdp))
       .then(() => {
         console.log('Call Offer')
-        socket.emit('offer', id, connection.localDescription)
+        socket.emit('offer', id, peerConnections[id].localDescription)
     })
 
-    connection.onicecandidate = event => {
+    peerConnections[id].onicecandidate = event => {
       if (event.candidate) {
         console.log('Call Candidate Local')
         socket.emit('candidateWatch', id, event.candidate)
