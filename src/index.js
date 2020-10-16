@@ -93,18 +93,18 @@ io.on('connection', (socket) => {
     })
     
 
-    socket.on('candidateLocal', (id, message) => {
+    // socket.on('candidateLocal', (id, message) => {
+    //     const user = getUser(socket.id)
+    //     const toUser = getUser(id)
+
+    //     socket.to(toUser.id).emit('candidateLocal', user.id, message);
+    // })
+
+    socket.on('candidate', (id, message) => {
         const user = getUser(socket.id)
         const toUser = getUser(id)
 
-        socket.to(toUser.id).emit('candidateLocal', user.id, message);
-    })
-
-    socket.on('candidateRemote', (id, message) => {
-        const user = getUser(socket.id)
-        const toUser = getUser(id)
-
-        socket.to(toUser.id).emit('candidateRemote', user.id, message);
+        socket.to(toUser.id).emit('candidate', user.id, message);
     })
 
     socket.on('disconnect', () => {
