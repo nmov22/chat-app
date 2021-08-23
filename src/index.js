@@ -134,7 +134,7 @@ app.get('/registration', (req, res) => {
     res.render('view/registration-html/registration')
 })
 
-app.post('api/register/', register)
+app.post('/api/register', register);
 
 server.listen(port, () => {
     console.log('Server is up on port ' + port)
