@@ -2,22 +2,36 @@
 <html>
     <head>
         <title>Chat App</title>
-        <link rel="icon" href="/img/favicon.png">
-        <link rel="stylesheet" href="/css/styles.min.css">
+        <link rel="icon" href="/img/chat.png">
+        <link rel="stylesheet" href="./css/bootstrap.min.css">
+        <link rel="stylesheet" href="./css/custom-style.css">
     </head>
 
     <body>
-        <div class="centered_form">
-            <div class="centered-form__box">
-                <h1>Join</h1>
-                <form action="./chat-lobby.html">
-                    <button>Chat</button>
-                </form>
-                <form action="./video-lobby.html">
-                    <button>Video</button>
-                </form>
+        <div class="container">
+            <div class="row justify-content-center align-items-center screen-height-100">
+                <form class="col-12">
+                    <h1 class="text-center">Chat App</h1>
+                    <div class="mt-3 form-group">
+                        <label for="formGroupExampleInput">Username</label>
+                        <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Username">
+                    </div>
+                    <div class="mt-3 form-group">
+                        <label for="formGroupExampleInput2">Password</label>
+                        <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Password">
+                    </div>
+                    <div class="mt-4 form-group">
+                        <button class="btn btn-primary form-control">Login</button>
+                    </div>
+                    <div class="mt-4 form-group">
+                        <h5 class="text-center">Not registered yet?</h5>
+                        <button id="sign_up_button" class="btn btn-outline-dark form-control">Sign Up</button>
+                    </div>
+                </form>   
             </div>
         </div>
     </body>
+
+    <script src="./js/login/login.js"></script>
 </html>
 

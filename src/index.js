@@ -6,7 +6,10 @@ const socketio = require('socket.io')
 const wordsFilter = require('bad-words')
 const { generateLocation } = require('./utils/messages')
 const { generateMessage } = require('./utils/messages')
-const {addUser, removeUser, getUser, getUsersInRoom, getOtherUserInRoom} = require('./utils/users')
+const { addUser, removeUser, getUser, getUsersInRoom, getOtherUserInRoom } = require('./utils/users')
+
+const { api } = require('./api/api')
+const { register } = require('./api/registration/registration')
 const e = require('express')
 
 const app = express()
@@ -27,6 +30,9 @@ hbs.registerPartials(partialsPath)
 // Setup static directory to serve
 app.use(express.static(publicDirectoryPath))
 
+app.use('/css', express.static(path.join(__dirname, '../node_modules/bootstrap/dist/css')))
+app.use('/js', express.static(path.join(__dirname, '../node_modules/bootstrap/dist/js')))
+app.use('/js', express.static(path.join(__dirname, '../node_modules/jquery/dist')))
 
 io.on('connection', (socket) => {
     
@@ -122,6 +128,13 @@ app.get('', (req, res) => {
         title : 'Chat App',
     })
 })
+
+
+app.get('/registration', (req, res) => {
+    res.render('view/registration-html/registration')
+})
+
+app.post('api/register/', register)
 
 server.listen(port, () => {
     console.log('Server is up on port ' + port)
