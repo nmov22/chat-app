@@ -10,7 +10,7 @@
     "hbs": "^4.1.1",
     "jquery": "^3.6.0",
     "pg": "^8.7.1",
-    "socket.io": "^2.3.0"
+    "socket.io": "^4.7.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
